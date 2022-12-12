@@ -1,23 +1,37 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import TodoList from './components/TodoList';
+import InputFiled from './components/InputFiled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo, fetchTodos } from './store/todoSlice';
 import './App.css';
 
 function App() {
+  const [text, setText] = useState('')
+  const { status, error } = useSelector(state => state.todos)
+  const dispatch = useDispatch()
+  const addTask = () => {
+    dispatch(addTodo({ text }))
+    setText("")
+  }
+
+  useEffect(() => {
+    dispatch(fetchTodos())
+  }, [dispatch])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <InputFiled
+        text={text}
+        handleInput={setText}
+        handleSubmit={addTask}
+      />
+
+      {
+        status === "loading" && <p>Loading...</p>
+      }
+      {
+        error && <p>An error {error}</p>
+      }
+      <TodoList />
     </div>
   );
 }
